@@ -108,8 +108,8 @@
 }
 
 @media (max-width: 780px) {
-  .filters {
-    grid-template-columns: minmax(0, 1fr);
+  .filters__search {
+    grid-column: span 1;
   }
 
   .directory__head,
