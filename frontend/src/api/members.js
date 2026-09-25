@@ -151,7 +151,7 @@ function sanitize(details) {
     record[field] = trimmed === '' ? null : trimmed
   }
 
-  for (const [field, labels] of Object.entries(ENUM_FIELDS)) {
+  for (const field of Object.keys(ENUM_FIELDS)) {
     if (record[field] === null || record[field] === undefined) continue
     record[field] = text(record[field]).toLowerCase()
   }

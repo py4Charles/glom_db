@@ -1,6 +1,5 @@
 import { Link, useSearchParams } from 'react-router-dom'
 import {
-  DEFAULT_DIRECTION,
   DEFAULT_SORT,
   SORT_DIRECTIONS,
   SORT_OPTIONS,
