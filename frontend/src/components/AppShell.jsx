@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import '.styles/AppShell.css'
+import '../styles/AppShell.css'
 
 const NAV_ITEMS = [{ to: '/members', label: 'Members' }]
 
