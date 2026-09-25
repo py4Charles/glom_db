@@ -163,7 +163,6 @@ beforeEach(async () => {
   members.push(...structuredClone(seed))
 })
 
-const titles = (list) => list.map((member) => member.title)
 const ids = (list) => list.map((member) => member.id)
 
 describe('listMembers defaults', () => {
