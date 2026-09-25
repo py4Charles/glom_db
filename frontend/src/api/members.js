@@ -1,5 +1,9 @@
 import { members } from "./mockApi/data.js"
 
+export function getMember(id) {
+  return members.find(m => m.id === Number(id)) ?? null
+}
+
 export function listMembers(params = {}) {
   return members
     .filter(m => {
