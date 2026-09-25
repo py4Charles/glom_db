@@ -36,6 +36,17 @@
   box-shadow: 0 0 0 3px var(--color-danger-soft);
 }
 
+.form__error {
+  margin: 16px 0 0;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
+  border: 1px solid currentColor;
+  border-radius: var(--radius-sm);
+}
+
 .form__actions {
   display: flex;
   align-items: center;
