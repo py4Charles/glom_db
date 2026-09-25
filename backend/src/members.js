@@ -1,4 +1,4 @@
-import { query } from './db.js'
+import { pool } from './db.js'
 
 // Every identifier below is a hardcoded literal. Nothing in this file
 // interpolates a caller-supplied value into SQL: values are bound parameters,
@@ -109,20 +109,34 @@ function buildOrderBy(sort, direction) {
   const key = Object.hasOwn(SORT_EXPRESSIONS, sort) ? sort : DEFAULT_SORT
   const dir = DIRECTIONS.has(direction) ? direction : 'asc'
   const primary = SORT_EXPRESSIONS[key]
-  const terms = [...primary, ...TIE_BREAKERS.filter((term) => !primary.includes(term))]
+
+  // Only the sort column itself follows the direction. The tie-breakers stay
+  // ascending so that a flipped direction reverses the sorted values while the
+  // unsorted remainder holds its position -- the client-side implementation
+  // resolves ties identically, and the two must not disagree.
+  const terms = [
+    ...primary.map((term) => `${term} ${dir} nulls last`),
+    ...TIE_BREAKERS.filter((term) => !primary.includes(term)).map((term) => `${term} asc nulls last`),
+  ]
 
   // Postgres defaults to NULLS LAST ascending but NULLS FIRST descending, so
-  // the client-side rule of "untitled last in both directions" has to be stated
-  // explicitly on every term.
-  return terms.map((term) => `${term} ${dir} nulls last`).join(', ')
+  // the rule of "untitled last in both directions" has to be stated explicitly
+  // rather than inherited from the default.
+  return terms.join(', ')
 }
 
-export async function listMembers(params = {}) {
+// Every function takes an optional query executor, defaulting to the pool. The
+// reason is transaction scoping: a pool hands each query whichever connection is
+// free, so `pool.query('begin')` opens a transaction on one connection while
+// later queries may run on another and commit immediately. Tests pass a single
+// checked-out client so their BEGIN actually wraps the work they intend to roll
+// back.
+export async function listMembers(params = {}, db = pool) {
   const { where, values } = buildFilters(params)
   const orderBy = buildOrderBy(params.sort, params.direction)
   const isFiltered = where !== ''
 
-  const { rows } = await query(
+  const { rows } = await db.query(
     `select *, count(*) over ()::int as total_count
        from members
        ${where}
@@ -136,7 +150,7 @@ export async function listMembers(params = {}) {
   // filter is active the filtered count is already the whole directory.
   let totalAll = total
   if (isFiltered) {
-    const { rows: counts } = await query('select count(*)::int as total from members')
+    const { rows: counts } = await db.query('select count(*)::int as total from members')
     totalAll = counts[0].total
   }
 
@@ -147,8 +161,8 @@ export async function listMembers(params = {}) {
   }
 }
 
-export async function getMember(id) {
-  const { rows } = await query('select * from members where id = $1', [id])
+export async function getMember(id, db = pool) {
+  const { rows } = await db.query('select * from members where id = $1', [id])
   return rows[0] ?? null
 }
 
@@ -177,12 +191,12 @@ function placeholders(entries) {
   })
 }
 
-export async function createMember(input) {
+export async function createMember(input, db = pool) {
   const entries = writableEntries(input)
   if (entries.length === 0) throw new ValidationError('No writable fields supplied')
 
   const columns = entries.map(([column]) => column).join(', ')
-  const { rows } = await query(
+  const { rows } = await db.query(
     `insert into members (${columns}) values (${placeholders(entries).join(', ')})
      returning *`,
     entries.map(([, value]) => value),
@@ -191,12 +205,12 @@ export async function createMember(input) {
   return rows[0]
 }
 
-export async function updateMember(id, input) {
+export async function updateMember(id, input, db = pool) {
   const entries = writableEntries(input)
   if (entries.length === 0) throw new ValidationError('No writable fields supplied')
 
   const assignments = entries.map(([column], index) => `${column} = $${index + 1}`).join(', ')
-  const { rows } = await query(
+  const { rows } = await db.query(
     `update members set ${assignments} where id = $${entries.length + 1} returning *`,
     [...entries.map(([, value]) => value), id],
   )
@@ -205,14 +219,14 @@ export async function updateMember(id, input) {
   return rows[0]
 }
 
-export async function deleteMember(id) {
-  const { rowCount } = await query('delete from members where id = $1', [id])
+export async function deleteMember(id, db = pool) {
+  const { rowCount } = await db.query('delete from members where id = $1', [id])
   return rowCount > 0
 }
 
 // Lets a test assert the hardcoded allowlists still match the database.
-export async function readEnumValues() {
-  const { rows } = await query(
+export async function readEnumValues(db = pool) {
+  const { rows } = await db.query(
     `select t.typname, e.enumlabel
        from pg_type t
        join pg_enum e on e.enumtypid = t.oid
