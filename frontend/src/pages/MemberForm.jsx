@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { ApiError } from '../api/client.js'
 import { addMember, getMember, updateMember } from '../api/members.js'
 import { GENDER_OPTIONS, MARITAL_STATUS_OPTIONS, fullName } from '../lib/format.js'
 import '../styles/MemberForm.css'
@@ -58,22 +59,63 @@ export default function MemberForm() {
   const { memberId } = useParams()
   const navigate = useNavigate()
   const isEdit = Boolean(memberId)
-  const existing = isEdit ? getMember(memberId) : null
 
-  const [values, setValues] = useState(() =>
-    existing ? formFromMember(existing) : emptyForm(),
-  )
+  const [state, setState] = useState({ key: null, status: isEdit ? 'loading' : 'ready', member: null })
+  const [values, setValues] = useState(emptyForm)
   const [errors, setErrors] = useState({})
   const [saveError, setSaveError] = useState(null)
+  const [saving, setSaving] = useState(false)
 
-  if (isEdit && !existing) {
+  useEffect(() => {
+    if (!isEdit) return undefined
+
+    const controller = new AbortController()
+
+    // Re-seeding `values` here also fixes a bug from the previous version: the
+    // form state was initialised once, so navigating straight from one edit URL
+    // to another kept the first member's values.
+    getMember(memberId, { signal: controller.signal })
+      .then((member) => {
+        setValues(formFromMember(member))
+        setState({ key: memberId, status: 'ready', member })
+      })
+      .catch((cause) => {
+        if (cause.name === 'AbortError') return
+        setSaveError(cause.message)
+        setState({
+          key: memberId,
+          status: cause instanceof ApiError && cause.status === 404 ? 'missing' : 'error',
+          member: null,
+        })
+      })
+
+    return () => controller.abort()
+  }, [isEdit, memberId])
+
+  // Derived, not stored: a response for a previous id is not current, and
+  // setting state here would be a cascading render.
+  const isStale = state.key !== memberId
+  const status = isStale ? 'loading' : state.status
+  const member = state.member
+
+  if (status === 'loading') {
     return (
       <div className="page">
         <div className="empty">
-          <p className="empty__title">Member not found</p>
-          <p className="empty__body">
-            No member matches id <code>{memberId}</code>.
+          <p className="empty__title">Loading member…</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (status === 'missing' || status === 'error') {
+    return (
+      <div className="page">
+        <div className="empty">
+          <p className="empty__title">
+            {status === 'missing' ? 'Member not found' : 'Could not load this member'}
           </p>
+          <p className="empty__body">{saveError}</p>
           <Link to="/members" className="btn btn--primary">
             Back to members
           </Link>
@@ -91,8 +133,10 @@ export default function MemberForm() {
     )
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
+    if (saving) return
+
     const found = validate(values)
     setErrors(found)
 
@@ -103,17 +147,16 @@ export default function MemberForm() {
     }
 
     setSaveError(null)
+    setSaving(true)
 
-    const details = normalize(values)
-    const saved = isEdit ? updateMember(memberId, details) : addMember(details)
-
-    if (!saved) {
-      setSaveError('This member could not be saved. Please review the details and try again.')
-      return
+    try {
+      const details = normalize(values)
+      const saved = isEdit ? await updateMember(memberId, details) : await addMember(details)
+      navigate(isEdit ? `/members/${memberId}` : `/members/${saved.id}`)
+    } catch (cause) {
+      setSaveError(cause.message)
+      setSaving(false)
     }
-
-    setSaveError(null)
-    navigate(isEdit ? `/members/${memberId}` : `/members/${saved.id}`)
   }
 
   return (
@@ -126,7 +169,9 @@ export default function MemberForm() {
         <div>
           <h1 className="page__title">{isEdit ? 'Edit member' : 'New member'}</h1>
           <p className="page__subtitle">
-            {isEdit ? `Editing ${fullName(existing)}` : 'Add someone to the directory'}
+            {isEdit
+              ? `Editing ${fullName(member)}`
+              : 'Add someone to the directory'}
           </p>
         </div>
       </div>
@@ -201,19 +246,20 @@ export default function MemberForm() {
           })}
         </div>
 
-        <div className="form__actions">
-          <button type="submit" className="btn btn--primary">
-            {isEdit ? 'Save changes' : 'Add member'}
-          </button>
-          <Link to={cancelPath} className="btn btn--ghost">
-            Cancel
-          </Link>
-        </div>
         {saveError && (
           <p className="form__error" role="alert">
             {saveError}
           </p>
         )}
+
+        <div className="form__actions">
+          <button type="submit" className="btn btn--primary" disabled={saving}>
+            {saving ? 'Saving…' : isEdit ? 'Save changes' : 'Add member'}
+          </button>
+          <Link to={cancelPath} className="btn btn--ghost">
+            Cancel
+          </Link>
+        </div>
       </form>
     </div>
   )

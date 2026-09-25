@@ -1,0 +1,46 @@
+-- Demo directory contents. Deterministic ids keep the seed re-runnable and keep
+-- bookmarks stable across local resets.
+
+insert into members (
+  id, first_name, middle_name, last_name, preferred_name, suffix, title,
+  gender, date_of_birth, marital_status, photo_url, phone_number
+) values
+  ('00000000-0000-4000-8000-000000000001', 'John', 'Robert', 'Smith', 'Johnny', null, 'Rev.', 'male', '1965-04-12', 'married', null, '555-0101'),
+  ('00000000-0000-4000-8000-000000000002', 'John', null, 'Smith', null, 'Jr.', null, 'male', '1991-09-30', 'single', null, '555-0102'),
+  ('00000000-0000-4000-8000-000000000003', 'Jane', 'Marie', 'Smith', 'Janey', null, 'Mrs.', 'female', null, 'married', null, '555-0103'),
+  ('00000000-0000-4000-8000-000000000004', 'Maria', null, 'Garcia', null, null, null, 'prefer_not_to_say', '1978-11-02', 'widowed', 'https://example.com/photos/maria-garcia.jpg', null),
+  ('00000000-0000-4000-8000-000000000005', 'David', 'James', 'Brown', 'Dave', null, null, 'male', '2001-02-14', 'single', null, '555-0104'),
+  ('00000000-0000-4000-8000-000000000006', 'Ellen', null, 'Okafor', null, null, 'Dr.', 'female', '1989-07-23', 'divorced', null, '555-0105'),
+  ('00000000-0000-4000-8000-000000000007', 'Samuel', null, 'Peterson', 'Sam', null, null, 'male', '1958-12-05', 'married', null, '555-0106'),
+  ('00000000-0000-4000-8000-000000000008', 'Grace', 'Anne', 'Kariuki', null, null, null, 'female', null, 'prefer_not_to_say', null, '555-0107'),
+  ('00000000-0000-4000-8000-000000000009', 'Renée', null, 'Dubois', null, null, 'Dr.', 'female', '1985-04-02', 'single', null, '555-0108'),
+  ('00000000-0000-4000-8000-000000000010', 'Søren', null, 'Bak', null, null, null, 'male', '1972-11-19', 'married', null, '555-0109'),
+  ('00000000-0000-4000-8000-000000000011', 'Chloé', null, 'Moreau', null, null, 'Mme.', 'female', '1993-07-08', 'married', null, '555-0110'),
+  ('00000000-0000-4000-8000-000000000012', 'José', 'Miguel', 'Álvarez', 'Pepe', null, 'Sr.', 'male', '1968-02-14', 'single', null, '555-0111'),
+  ('00000000-0000-4000-8000-000000000013', 'Priya', null, 'Raghunathan', null, null, null, 'female', '1990-05-27', 'married', null, '555-0112'),
+  ('00000000-0000-4000-8000-000000000014', 'Tomás', null, 'Herrera', null, null, null, 'male', '1954-09-30', 'widowed', null, '555-0113'),
+  ('00000000-0000-4000-8000-000000000015', 'Ayana', null, 'Okonkwo', null, null, null, 'female', '1996-01-12', 'single', null, null),
+  ('00000000-0000-4000-8000-000000000016', 'Ingrid', null, 'Bergström', null, null, 'Dr.', 'female', '1977-12-03', 'divorced', null, '555-0115'),
+  ('00000000-0000-4000-8000-000000000017', 'Matteo', null, 'Rossi', null, null, null, 'male', '1988-03-22', 'married', 'https://example.com/photos/matteo-rossi.jpg', '555-0116'),
+  ('00000000-0000-4000-8000-000000000018', 'Fatima', null, 'Al-Rashid', null, null, null, 'female', '1979-08-14', 'married', null, '555-0117'),
+  ('00000000-0000-4000-8000-000000000019', 'Liam', 'Patrick', 'O''Sullivan', null, null, null, 'male', '2003-06-05', 'single', null, '555-0118'),
+  ('00000000-0000-4000-8000-000000000020', 'Wei', null, 'Zhang', null, null, 'Prof.', 'male', '1963-10-09', 'married', null, '555-0119'),
+  ('00000000-0000-4000-8000-000000000021', 'Amara', null, 'Nwosu', null, null, null, 'female', '1991-02-17', 'married', null, '555-0120'),
+  ('00000000-0000-4000-8000-000000000022', 'Hugo', null, 'Martins', null, null, null, 'male', '1986-11-28', 'single', null, '555-0121'),
+  ('00000000-0000-4000-8000-000000000023', 'Elif', null, 'Demir', null, null, null, 'female', null, 'prefer_not_to_say', null, '555-0123'),
+  ('00000000-0000-4000-8000-000000000024', 'Nikolai', null, 'Petrov', null, null, null, 'male', '1951-04-06', 'married', null, '555-0124'),
+  ('00000000-0000-4000-8000-000000000025', 'Sofía', null, 'Castellanos', null, null, 'Srta.', 'female', '2000-09-19', 'single', null, '555-0125'),
+  ('00000000-0000-4000-8000-000000000026', 'Daniel', null, 'Kim', null, null, null, 'male', '1982-01-08', 'married', null, '555-0126'),
+  ('00000000-0000-4000-8000-000000000027', 'Aisha', null, 'Rahman', null, null, null, 'female', '1948-07-25', 'widowed', null, '555-0127'),
+  ('00000000-0000-4000-8000-000000000028', 'Marco', null, 'Bianchi', null, null, null, 'male', '1975-03-11', 'divorced', 'https://example.com/photos/marco-bianchi.jpg', '555-0128'),
+  ('00000000-0000-4000-8000-000000000029', 'Leila', null, 'Nasser', null, null, null, 'female', '1997-05-02', 'single', null, '555-0129'),
+  ('00000000-0000-4000-8000-000000000030', 'Oliver', 'James', 'Fitzgerald', 'Ollie', null, null, 'male', '1971-12-15', 'married', null, '555-0130'),
+  ('00000000-0000-4000-8000-000000000031', 'Njeri', null, 'Kariuki', null, null, null, 'female', '1994-08-21', 'married', null, '555-0131'),
+  ('00000000-0000-4000-8000-000000000032', 'Viktor', null, 'Novák', null, null, 'Ing.', 'male', '1980-02-27', 'single', null, '555-0132'),
+  ('00000000-0000-4000-8000-000000000033', 'Bianca', null, 'Rossi', null, null, null, 'female', '1998-06-13', 'single', null, '555-0133'),
+  ('00000000-0000-4000-8000-000000000034', 'Yusuf', null, 'Demir', null, null, null, 'male', '1990-09-04', 'married', null, '555-0134'),
+  ('00000000-0000-4000-8000-000000000035', 'Emma', null, 'Dubois', null, null, null, 'female', '2005-04-29', 'single', null, '555-0135'),
+  ('00000000-0000-4000-8000-000000000036', 'Carlos', null, 'Rivera', null, null, null, 'male', '1959-10-11', 'married', null, '555-0136'),
+  ('00000000-0000-4000-8000-000000000037', 'Noor', null, 'Al-Amin', null, null, null, 'female', '1987-01-23', 'single', null, '555-0137'),
+  ('00000000-0000-4000-8000-000000000038', 'Grace', null, 'Adeyemi', null, null, null, 'female', '2002-07-07', 'prefer_not_to_say', null, '555-0138')
+on conflict (id) do nothing;

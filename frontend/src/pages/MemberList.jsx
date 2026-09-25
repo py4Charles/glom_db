@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import {
   DEFAULT_SORT,
@@ -22,6 +23,7 @@ import '../styles/MemberList.css'
 
 const COLUMNS = ['Name', 'Phone', 'Gender', 'Marital status', 'Born']
 const FILTER_PARAMS = ['q', 'gender', 'marital_status', 'title']
+const EMPTY_RESULT = { members: [], total: 0, totalAll: 0 }
 
 function bornLine(member) {
   const formatted = formatDate(member.date_of_birth)
@@ -42,10 +44,44 @@ export default function MemberList() {
   })
   const activeFilterCount = countActiveFilters(query)
 
-  // Derived on every render, not memoised: the data lives outside React, so
-  // mutations from the form/detail pages would not invalidate a cache here.
-  const visibleMembers = listMembers(query)
-  const totalCount = listMembers().length
+  const [state, setState] = useState({
+    key: null,
+    status: 'loading',
+    result: EMPTY_RESULT,
+    error: null,
+  })
+
+  // A stable primitive key. Depending on `query` itself would refire on every
+  // render, because parseQuery returns a fresh object each time.
+  const requestKey = searchParams.toString()
+
+  useEffect(() => {
+    // Every keystroke starts a request, and responses can arrive out of order.
+    // Aborting the previous one stops a slow earlier response from overwriting
+    // a fast later one, which would otherwise show results for a stale query.
+    const controller = new AbortController()
+
+    listMembers(query, { signal: controller.signal })
+      .then((result) => {
+        setState({ key: requestKey, status: 'ready', result, error: null })
+      })
+      .catch((cause) => {
+        if (cause.name === 'AbortError') return
+        setState({ key: requestKey, status: 'error', result: EMPTY_RESULT, error: cause.message })
+      })
+
+    return () => controller.abort()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requestKey])
+
+  // Derived rather than stored: while a newer request is in flight the previous
+  // result is no longer current, so show loading instead of flashing stale rows.
+  // Setting state here would be a cascading render, and setting it inside the
+  // effect would render once with the old data first.
+  const isStale = state.key !== requestKey
+  const status = isStale ? 'loading' : state.status
+  const error = isStale ? null : state.error
+  const { members: visibleMembers, total, totalAll } = isStale ? EMPTY_RESULT : state.result
 
   function applyParams(changes) {
     const next = new URLSearchParams(searchParams)
@@ -66,9 +102,7 @@ export default function MemberList() {
   }
 
   function toggleDirection() {
-    applyParams({
-      direction: query.direction === 'asc' ? 'desc' : 'asc',
-    })
+    applyParams({ direction: query.direction === 'asc' ? 'desc' : 'asc' })
   }
 
   const directionLabel =
@@ -77,15 +111,21 @@ export default function MemberList() {
   const nextDirectionLabel =
     SORT_DIRECTIONS.find((option) => option.value === nextDirection)?.label ?? 'Descending'
 
+  const isEmpty = status === 'ready' && visibleMembers.length === 0
+
   return (
     <div className="page">
       <div className="page__header">
         <div>
           <h1 className="page__title">Members</h1>
           <p className="page__subtitle" aria-live="polite">
-            {activeFilterCount > 0
-              ? `${visibleMembers.length} of ${totalCount} members`
-              : `${totalCount} members on record`}
+            {status === 'loading' && !visibleMembers.length
+              ? 'Loading members…'
+              : status === 'error'
+                ? 'Could not load members'
+                : activeFilterCount > 0
+                  ? `${total} of ${totalAll} members`
+                  : `${totalAll} members on record`}
           </p>
         </div>
         <div className="page__actions">
@@ -205,7 +245,19 @@ export default function MemberList() {
         </div>
       </form>
 
-      {visibleMembers.length === 0 ? (
+      {status === 'error' ? (
+        <div className="empty">
+          <p className="empty__title">Could not load members</p>
+          <p className="empty__body">{error}</p>
+          <button
+            type="button"
+            className="btn"
+            onClick={() => setSearchParams(searchParams, { replace: true })}
+          >
+            Try again
+          </button>
+        </div>
+      ) : isEmpty ? (
         <div className="empty">
           <p className="empty__title">No members match those filters</p>
           <p className="empty__body">
@@ -216,7 +268,10 @@ export default function MemberList() {
           </Link>
         </div>
       ) : (
-        <div className="directory card">
+        <div
+          className="directory card"
+          aria-busy={status === 'loading' ? 'true' : 'false'}
+        >
           <div className="directory__head" aria-hidden="true">
             <span className="directory__col" data-column="avatar" />
             {COLUMNS.map((label, index) => (
