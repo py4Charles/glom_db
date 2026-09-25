@@ -10,7 +10,7 @@ import {
   maritalStatusLabel,
   nameWithPrefix,
 } from '../lib/format.js'
-import './MemberDetail.css'
+import '..styles/MemberDetail.css'
 
 function Row({ label, children }) {
   return (

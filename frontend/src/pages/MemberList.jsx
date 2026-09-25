@@ -11,7 +11,7 @@ import {
   maritalStatusLabel,
   nameWithPrefix,
 } from '../lib/format.js'
-import './MemberList.css'
+import '..styles/MemberList.css'
 
 const COLUMNS = ['Name', 'Phone', 'Gender', 'Marital status', 'Born']
 

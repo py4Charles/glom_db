@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { initials } from '../lib/format.js'
-import './Avatar.css'
+import '../styles/Avatar.css'
 
 const SIZES = { sm: 32, md: 40, lg: 72, xl: 96 }
 
