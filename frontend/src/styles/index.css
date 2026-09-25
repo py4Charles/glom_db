@@ -16,6 +16,11 @@
   --color-accent-soft: #eef2fd;
   --color-accent-border: #c5d0f8;
 
+  --color-danger: #b8281f;
+  --color-danger-hover: #97211a;
+  --color-danger-border: #e8b3af;
+  --color-danger-soft: #fdeeed;
+
   --tint-blue-bg: #eaf0fe;
   --tint-blue-fg: #2a4bb5;
   --tint-rose-bg: #fdeef2;
@@ -124,6 +129,12 @@ a:hover {
   margin-bottom: 20px;
 }
 
+.page__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .page__title {
   font-size: 24px;
 }
@@ -203,6 +214,17 @@ a:hover {
 .btn--ghost:hover {
   background: var(--color-surface-muted);
   color: var(--color-text);
+}
+
+.btn--danger {
+  background: var(--color-surface);
+  border-color: var(--color-danger-border);
+  color: var(--color-danger);
+}
+
+.btn--danger:hover {
+  background: var(--color-danger-soft);
+  border-color: var(--color-danger);
 }
 
 .field {
