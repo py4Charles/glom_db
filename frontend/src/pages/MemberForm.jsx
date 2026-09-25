@@ -64,6 +64,7 @@ export default function MemberForm() {
     existing ? formFromMember(existing) : emptyForm(),
   )
   const [errors, setErrors] = useState({})
+  const [saveError, setSaveError] = useState(null)
 
   if (isEdit && !existing) {
     return (
@@ -101,14 +102,18 @@ export default function MemberForm() {
       return
     }
 
+    setSaveError(null)
+
     const details = normalize(values)
-    if (isEdit) {
-      updateMember(memberId, details)
-      navigate(`/members/${memberId}`)
-    } else {
-      const created = addMember(details)
-      navigate(`/members/${created.id}`)
+    const saved = isEdit ? updateMember(memberId, details) : addMember(details)
+
+    if (!saved) {
+      setSaveError('This member could not be saved. Please review the details and try again.')
+      return
     }
+
+    setSaveError(null)
+    navigate(isEdit ? `/members/${memberId}` : `/members/${saved.id}`)
   }
 
   return (
@@ -204,6 +209,11 @@ export default function MemberForm() {
             Cancel
           </Link>
         </div>
+        {saveError && (
+          <p className="form__error" role="alert">
+            {saveError}
+          </p>
+        )}
       </form>
     </div>
   )
