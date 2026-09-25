@@ -1,8 +1,28 @@
 .filters {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  align-items: end;
   gap: 12px;
   margin-bottom: 16px;
+}
+
+.filters__search {
+  grid-column: span 2;
+}
+
+.filters__sort-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.filters__sort-controls .input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.filters__sort-controls .btn {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 /* ---------- grid shared by header and rows ---------- */

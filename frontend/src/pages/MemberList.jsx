@@ -1,8 +1,17 @@
 import { Link, useSearchParams } from 'react-router-dom'
-import { listMembers } from '../api/members.js'
+import {
+  DEFAULT_DIRECTION,
+  DEFAULT_SORT,
+  SORT_DIRECTIONS,
+  SORT_OPTIONS,
+  countActiveFilters,
+  listMembers,
+  parseQuery,
+} from '../api/members.js'
 import Avatar from '../components/Avatar.jsx'
 import {
   GENDER_OPTIONS,
+  MARITAL_STATUS_OPTIONS,
   ageFrom,
   formatDate,
   fullName,
@@ -13,6 +22,7 @@ import {
 import '../styles/MemberList.css'
 
 const COLUMNS = ['Name', 'Phone', 'Gender', 'Marital status', 'Born']
+const FILTER_PARAMS = ['q', 'gender', 'marital_status', 'title']
 
 function bornLine(member) {
   const formatted = formatDate(member.date_of_birth)
@@ -23,41 +33,67 @@ function bornLine(member) {
 
 export default function MemberList() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const search = searchParams.get('q') ?? ''
-  const gender = searchParams.get('gender') ?? ''
-  const hasFilters = Boolean(search || gender)
+  const query = parseQuery({
+    search: searchParams.get('q'),
+    gender: searchParams.get('gender'),
+    marital_status: searchParams.get('marital_status'),
+    title: searchParams.get('title'),
+    sort: searchParams.get('sort'),
+    direction: searchParams.get('direction'),
+  })
+  const activeFilterCount = countActiveFilters(query)
 
   // Derived on every render, not memoised: the data lives outside React, so
   // mutations from the form/detail pages would not invalidate a cache here.
-  const visibleMembers = listMembers({ search, gender })
+  const visibleMembers = listMembers(query)
   const totalCount = listMembers().length
 
-  function setParam(key, value) {
+  function applyParams(changes) {
     const next = new URLSearchParams(searchParams)
-    if (value) {
-      next.set(key, value)
-    } else {
-      next.delete(key)
+    for (const [key, value] of Object.entries(changes)) {
+      if (value) {
+        next.set(key, value)
+      } else {
+        next.delete(key)
+      }
     }
     setSearchParams(next, { replace: true })
   }
+
+  function clearFilters() {
+    const next = new URLSearchParams(searchParams)
+    for (const key of FILTER_PARAMS) next.delete(key)
+    setSearchParams(next, { replace: true })
+  }
+
+  function toggleDirection() {
+    applyParams({
+      direction: query.direction === 'asc' ? 'desc' : 'asc',
+    })
+  }
+
+  const directionLabel =
+    SORT_DIRECTIONS.find((option) => option.value === query.direction)?.label ?? 'Ascending'
+  const nextDirection = query.direction === 'asc' ? 'desc' : 'asc'
+  const nextDirectionLabel =
+    SORT_DIRECTIONS.find((option) => option.value === nextDirection)?.label ?? 'Descending'
 
   return (
     <div className="page">
       <div className="page__header">
         <div>
           <h1 className="page__title">Members</h1>
-          <p className="page__subtitle">
-            {hasFilters
+          <p className="page__subtitle" aria-live="polite">
+            {activeFilterCount > 0
               ? `${visibleMembers.length} of ${totalCount} members`
               : `${totalCount} members on record`}
           </p>
         </div>
         <div className="page__actions">
-          {hasFilters && (
-            <Link to="/members" className="btn btn--ghost">
+          {activeFilterCount > 0 && (
+            <button type="button" className="btn btn--ghost" onClick={clearFilters}>
               Clear filters
-            </Link>
+            </button>
           )}
           <Link to="/members/new" className="btn btn--primary">
             New member
@@ -78,20 +114,21 @@ export default function MemberList() {
             id="member-search"
             className="input"
             type="search"
-            placeholder="Search by first or last name"
-            value={search}
-            onChange={(event) => setParam('q', event.target.value)}
+            placeholder="Search by first, last, or preferred name"
+            value={query.search}
+            onChange={(event) => applyParams({ q: event.target.value })}
           />
         </div>
-        <div className="field filters__gender">
+
+        <div className="field">
           <label className="field__label" htmlFor="gender-filter">
             Gender
           </label>
           <select
             id="gender-filter"
             className="input"
-            value={gender}
-            onChange={(event) => setParam('gender', event.target.value)}
+            value={query.gender}
+            onChange={(event) => applyParams({ gender: event.target.value })}
           >
             <option value="">All</option>
             {GENDER_OPTIONS.map((option) => (
@@ -101,14 +138,79 @@ export default function MemberList() {
             ))}
           </select>
         </div>
+
+        <div className="field">
+          <label className="field__label" htmlFor="marital-status-filter">
+            Marital status
+          </label>
+          <select
+            id="marital-status-filter"
+            className="input"
+            value={query.marital_status}
+            onChange={(event) => applyParams({ marital_status: event.target.value })}
+          >
+            <option value="">All</option>
+            {MARITAL_STATUS_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="field">
+          <label className="field__label" htmlFor="title-filter">
+            Title
+          </label>
+          <input
+            id="title-filter"
+            className="input"
+            type="search"
+            placeholder="Rev., Dr., Mrs."
+            value={query.title}
+            onChange={(event) => applyParams({ title: event.target.value })}
+          />
+        </div>
+
+        <div className="field filters__sort">
+          <label className="field__label" htmlFor="sort-field">
+            Sort by
+          </label>
+          <div className="filters__sort-controls">
+            <select
+              id="sort-field"
+              className="input"
+              value={query.sort}
+              onChange={(event) =>
+                applyParams({
+                  sort: event.target.value === DEFAULT_SORT ? '' : event.target.value,
+                })
+              }
+            >
+              {SORT_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              className="btn"
+              onClick={toggleDirection}
+              aria-label={`Sort direction: ${directionLabel}. Switch to ${nextDirectionLabel}.`}
+            >
+              <span aria-hidden="true">{query.direction === 'asc' ? '↑' : '↓'}</span>{' '}
+              {directionLabel}
+            </button>
+          </div>
+        </div>
       </form>
 
       {visibleMembers.length === 0 ? (
         <div className="empty">
           <p className="empty__title">No members match those filters</p>
           <p className="empty__body">
-            Try a different name, or reset the gender filter to see everyone on
-            record.
+            Try a different name, or clear the filters to see everyone on record.
           </p>
           <Link to="/members" className="btn">
             Reset filters

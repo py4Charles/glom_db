@@ -12,10 +12,13 @@ export const MARITAL_STATUS_LABELS = {
   prefer_not_to_say: 'Prefer not to say',
 }
 
-export const GENDER_OPTIONS = Object.entries(GENDER_LABELS).map(([value, label]) => ({
-  value,
-  label,
-}))
+function toOptions(labels) {
+  return Object.entries(labels).map(([value, label]) => ({ value, label }))
+}
+
+export const GENDER_OPTIONS = toOptions(GENDER_LABELS)
+
+export const MARITAL_STATUS_OPTIONS = toOptions(MARITAL_STATUS_LABELS)
 
 function parts(dateValue) {
   const [year, month, day] = dateValue.split('-').map(Number)
