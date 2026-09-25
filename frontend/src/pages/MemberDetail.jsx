@@ -1,5 +1,5 @@
-import { Link, useParams } from 'react-router-dom'
-import { getMember } from '../api/members.js'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { deleteMember, getMember } from '../api/members.js'
 import Avatar from '../components/Avatar.jsx'
 import {
   ageFrom,
@@ -27,6 +27,7 @@ function NotRecorded() {
 
 export default function MemberDetail() {
   const { memberId } = useParams()
+  const navigate = useNavigate()
   const member = getMember(memberId)
 
   if (!member) {
@@ -47,6 +48,15 @@ export default function MemberDetail() {
 
   const formattedDob = formatDate(member.date_of_birth)
   const age = ageFrom(member.date_of_birth)
+
+  function handleDelete() {
+    const confirmed = window.confirm(
+      `Delete ${nameWithPrefix(member)}? This cannot be undone.`,
+    )
+    if (!confirmed) return
+    deleteMember(member.id)
+    navigate('/members')
+  }
 
   return (
     <div className="page">
