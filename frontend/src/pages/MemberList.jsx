@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { listMembers } from '../api/members.js'
 import Avatar from '../components/Avatar.jsx'
@@ -28,11 +27,10 @@ export default function MemberList() {
   const gender = searchParams.get('gender') ?? ''
   const hasFilters = Boolean(search || gender)
 
-  const visibleMembers = useMemo(
-    () => listMembers({ search, gender }),
-    [search, gender],
-  )
-  const totalCount = useMemo(() => listMembers().length, [])
+  // Derived on every render, not memoised: the data lives outside React, so
+  // mutations from the form/detail pages would not invalidate a cache here.
+  const visibleMembers = listMembers({ search, gender })
+  const totalCount = listMembers().length
 
   function setParam(key, value) {
     const next = new URLSearchParams(searchParams)
@@ -55,11 +53,16 @@ export default function MemberList() {
               : `${totalCount} members on record`}
           </p>
         </div>
-        {hasFilters && (
-          <Link to="/members" className="btn btn--ghost">
-            Clear filters
+        <div className="page__actions">
+          {hasFilters && (
+            <Link to="/members" className="btn btn--ghost">
+              Clear filters
+            </Link>
+          )}
+          <Link to="/members/new" className="btn btn--primary">
+            New member
           </Link>
-        )}
+        </div>
       </div>
 
       <form
