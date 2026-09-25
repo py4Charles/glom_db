@@ -1,12 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { addMember, getMember, updateMember } from '../api/members.js'
-import { GENDER_OPTIONS, MARITAL_STATUS_LABELS, fullName } from '../lib/format.js'
+import { GENDER_OPTIONS, MARITAL_STATUS_OPTIONS, fullName } from '../lib/format.js'
 import '../styles/MemberForm.css'
-
-const MARITAL_OPTIONS = Object.entries(MARITAL_STATUS_LABELS).map(
-  ([value, label]) => ({ value, label }),
-)
 
 const FIELDS = [
   { name: 'first_name', label: 'First name', required: true, autoComplete: 'given-name' },
@@ -18,7 +14,7 @@ const FIELDS = [
     name: 'marital_status',
     label: 'Marital status',
     type: 'select',
-    options: MARITAL_OPTIONS,
+    options: MARITAL_STATUS_OPTIONS,
     required: true,
   },
   { name: 'date_of_birth', label: 'Date of birth', type: 'date' },
