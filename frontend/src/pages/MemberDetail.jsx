@@ -79,6 +79,14 @@ export default function MemberDetail() {
             {member.suffix && <span className="badge">{member.suffix}</span>}
           </div>
         </div>
+        <div className="profile__actions">
+          <Link to={`/members/${member.id}/edit`} className="btn btn--primary">
+            Edit
+          </Link>
+          <button type="button" className="btn btn--danger" onClick={handleDelete}>
+            Delete
+          </button>
+        </div>
       </div>
 
       <div className="detail__grid">
