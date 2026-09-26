@@ -1,7 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import '../styles/AppShell.css'
 
-const NAV_ITEMS = [{ to: '/members', label: 'Members' }]
+// const NAV_ITEMS = [{ to: '/members', label: 'Members' }]
 
 export default function AppShell() {
   return (
@@ -12,9 +12,9 @@ export default function AppShell() {
             <span className="shell__mark" aria-hidden="true">
               G
             </span>
-            <span className="shell__wordmark">Glom</span>
+            <span className="shell__wordmark">Glom Data-house</span>
           </NavLink>
-          <nav className="shell__nav" aria-label="Main">
+          {/* <nav className="shell__nav" aria-label="Main">
             {NAV_ITEMS.map(item => (
               <NavLink
                 key={item.to}
@@ -25,7 +25,7 @@ export default function AppShell() {
                 {item.label}
               </NavLink>
             ))}
-          </nav>
+          </nav> */}
         </div>
       </header>
       <main className="shell__main">
