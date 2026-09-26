@@ -45,6 +45,18 @@ describe('http api', { skip: skipReason ?? false }, () => {
   })
 
   after(async () => {
+    // These tests write through real HTTP against a persistent database, so an
+    // aborted run between the POST and its DELETE would leave a 'Route Test' row
+    // behind forever. Seeded ids are the 00000000-0000-4000-8000-NNN pattern, so
+    // anything outside it was written by a test. This runs before pool.end()
+    // because it still needs a live connection.
+    const { rowCount } = await pool.query(
+      "delete from members where id::text not like '00000000-0000-4000-8000-%'",
+    )
+    if (rowCount > 0) {
+      console.warn(`Cleaned up ${rowCount} row(s) left by an interrupted test run`)
+    }
+
     await new Promise((resolve) => server.close(resolve))
     await pool.end()
   })

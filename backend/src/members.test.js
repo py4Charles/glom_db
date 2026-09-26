@@ -69,6 +69,19 @@ describe('members repository', { skip: skipReason ?? false }, () => {
   const update = (id, patch) => updateMember(id, patch, client)
   const remove = (id) => deleteMember(id, client)
 
+  // app.test.js runs concurrently against the same database and writes through
+  // the HTTP API, so a row can appear in one listing and be gone by the next.
+  // Comparing whole id arrays therefore fails intermittently for reasons that
+  // have nothing to do with the code under test. The invariant these tests
+  // actually care about is the *relative order* of the rows both listings share,
+  // so compare that instead of the raw arrays.
+  function assertSameOrder(actual, expected, message) {
+    const expectedIndex = new Map(expected.map((id, index) => [id, index]))
+    const shared = actual.filter((id) => expectedIndex.has(id))
+    const positions = shared.map((id) => expectedIndex.get(id))
+    assert.deepEqual(positions, [...positions].sort((a, b) => a - b), message)
+  }
+
   // Any error inside a Postgres transaction aborts the entire transaction, not
   // just the failing statement. The tests below deliberately provoke constraint
   // violations, so each one runs inside a savepoint that gets rolled back --
@@ -132,14 +145,22 @@ describe('members repository', { skip: skipReason ?? false }, () => {
       const fallback = (await list()).members.map((m) => m.id)
       for (const key of ['nope', '; drop table members', 'constructor', '__proto__', 'toString']) {
         const { members } = await list({ sort: key })
-        assert.deepEqual(members.map((m) => m.id), fallback, `sort=${key}`)
+        assertSameOrder(
+          members.map((m) => m.id),
+          fallback,
+          `sort=${key} did not preserve the default ordering`,
+        )
       }
     })
 
     it('treats an unrecognised direction as ascending', async () => {
       const asc = (await list({ direction: 'asc' })).members.map((m) => m.id)
       const { members } = await list({ direction: 'sideways' })
-      assert.deepEqual(members.map((m) => m.id), asc)
+      assertSameOrder(
+        members.map((m) => m.id),
+        asc,
+        'an unrecognised direction did not fall back to ascending',
+      )
     })
   })
 
