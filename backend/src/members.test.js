@@ -2,12 +2,11 @@ import assert from 'node:assert/strict'
 import { after, before, describe, it } from 'node:test'
 
 // dotenv does not override variables that already exist, so it has to load
-// first. With the fallback applied before this import, the placeholder would win
+// first. With a fallback applied before this import, the placeholder would win
 // over a perfectly good .env and every test would skip with invalid_password.
 await import('dotenv/config')
 
 process.env.AUTH_MODE ??= 'dev'
-process.env.DATABASE_URL ??= 'postgresql://postgres:postgres@127.0.0.1:5432/postgres'
 
 const { pool } = await import('./db.js')
 const {

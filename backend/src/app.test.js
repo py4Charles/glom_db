@@ -4,7 +4,6 @@ import { after, before, describe, it } from 'node:test'
 // dotenv first: it does not override variables that already exist.
 await import('dotenv/config')
 process.env.AUTH_MODE ??= 'dev'
-process.env.DATABASE_URL ??= 'postgresql://postgres:postgres@127.0.0.1:5432/postgres'
 
 const { createApp } = await import('./app.js')
 const { pool } = await import('./db.js')
