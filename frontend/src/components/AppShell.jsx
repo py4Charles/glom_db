@@ -31,6 +31,24 @@ export default function AppShell() {
       <main className="shell__main">
         <Outlet />
       </main>
+      <div className='footer__main'>
+        <div className='footer__main__1'>
+          <div className='footer__content'></div>
+          <div className='footer__content__1'>
+            <div className='footer__content__3'>
+              <p> Global Life Ministries</p>
+              <div className='footer__content__2'>
+                <div className='footer__content__4'>
+                  <p> Privacy Policy</p>
+                  <p> Terms of service</p>
+                  <p> About</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div >
     </div>
-  )
-}
+
+  );
+};
