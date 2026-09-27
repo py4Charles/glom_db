@@ -140,3 +140,7 @@
    width: 100%;
    /* background: blue; */
 }
+
+.footer__content__3 p{
+  color: var(--color-text-muted)
+}
