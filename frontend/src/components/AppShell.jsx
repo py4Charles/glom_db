@@ -36,7 +36,7 @@ export default function AppShell() {
           <div className='footer__content'></div>
           <div className='footer__content__1'>
             <div className='footer__content__3'>
-              <p> Global Life Ministries</p>
+              <p> Global Life  Outreach Ministries</p>
               <div className='footer__content__2'>
                 <div className='footer__content__4'>
                   <p> Privacy Policy</p>
