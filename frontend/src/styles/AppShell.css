@@ -105,10 +105,9 @@
   display: inline-flex;
   align-items: center; 
   justify-content: center;
-  /* gap: 230px; */
   width: 1600px;
   position: relative;
-  left: 70px;
+  left: 60px;
   margin: 0 auto;
   padding: 0px 12px;
   /* background: red; */
