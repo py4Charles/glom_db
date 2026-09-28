@@ -33,10 +33,11 @@ export default function AppShell() {
       </main>
       <div className='footer__main'>
         <div className='footer__main__1'>
-          <div className='footer__content'></div>
-          <div className='footer__content__1'>
-            <div className='footer__content__3'>
-              <p> Global Life  Outreach Ministries</p>
+          <div className='footer__content'>
+            <div className='footer__content__1'>
+              <div className='footer__content__3'>
+                <p> GlomCode</p>
+              </div>
               <div className='footer__content__2'>
                 <div className='footer__content__4'>
                   <p> Privacy Policy</p>
@@ -46,6 +47,7 @@ export default function AppShell() {
               </div>
             </div>
           </div>
+
         </div>
       </div >
     </div>
