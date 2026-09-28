@@ -87,8 +87,6 @@
 }
 
 .footer__main {
-  background: var(--color-page);
-  z-index: 22;
 }
 
 .footer__main__1 {
@@ -105,7 +103,6 @@
 .footer__content__1 {
   display: flex;
   align-items: center;
-  justify-content: center;
   max-width: var(--content-max);
   margin: 0 auto;
   /* background: red; */
@@ -113,7 +110,6 @@
 
 .footer__content__4 {
   display: inline-flex;
-  gap: 30px;
   padding: 8px 0px;
   margin-left: auto;
   /* background: red; */
@@ -122,7 +118,7 @@
 .footer__content__3 {
   display: flex;
   align-items: center;
-  width: 100%;
+  background: yellow;
 }
 
 .footer__content__3 p {
