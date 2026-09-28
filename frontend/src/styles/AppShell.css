@@ -87,11 +87,11 @@
 }
 
 .footer__main {
+  /* background: var(--color-page); */
 }
 
 .footer__main__1 {
   display: flex;
-  flex-direction: column;
 }
 
 .footer__content {
@@ -123,5 +123,4 @@
 
 .footer__content__3 p {
   color: var(--color-text);
-  font-family: var(--font-sans);
 }
