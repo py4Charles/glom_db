@@ -88,12 +88,14 @@
 
 .footer__main__1 {
   display: flex;
+  /* background: blue; */
 }
 
 .footer__content {
   background: rgba(255, 255, 255, 0.85);
   border-top: 1px solid var(--color-border);
   backdrop-filter: saturate(180%) blur(8px);
+  width: 100%;
 }
 
 .footer__content__1 {
@@ -101,7 +103,7 @@
   align-items: center;
   max-width: var(--content-max);
   margin: 0 auto;
-  /* background: red; */
+  background: red;
 }
 
 .footer__content__4 {
@@ -113,7 +115,7 @@
 
 .footer__content__3 {
   display: flex;
-  align-items: center;
+  margin-right: auto;
   background: yellow;
 }
 
