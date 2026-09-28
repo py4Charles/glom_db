@@ -86,10 +86,6 @@
   flex: 1;
 }
 
-.footer__main {
-  /* background: var(--color-page); */
-}
-
 .footer__main__1 {
   display: flex;
 }
