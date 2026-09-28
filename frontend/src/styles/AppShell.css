@@ -111,11 +111,6 @@
   /* background: red; */
 }
 
-.footer__content__2 {
-  display: flex;
-  /* background: green; */
-}
-
 .footer__content__4 {
   display: inline-flex;
   gap: 30px;
@@ -129,8 +124,6 @@
   align-items: center;
   gap: 28px;
   width: 100%;
-  max-width: var(--content-max);
-  margin: 0 auto;
   padding: 0 24px;
 }
 
