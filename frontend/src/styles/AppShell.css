@@ -122,9 +122,7 @@
 .footer__content__3 {
   display: flex;
   align-items: center;
-  gap: 28px;
   width: 100%;
-  padding: 0 24px;
 }
 
 .footer__content__3 p {
