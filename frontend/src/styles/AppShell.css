@@ -113,15 +113,14 @@
 
 .footer__content__2 {
   display: flex;
-  padding: 8px 0px;
-  margin-left: auto;
   /* background: green; */
 }
 
 .footer__content__4 {
   display: inline-flex;
   gap: 30px;
-  width: 295px;
+  padding: 8px 0px;
+  margin-left: auto;
   /* background: red; */
 }
 

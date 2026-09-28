@@ -38,12 +38,10 @@ export default function AppShell() {
               <div className='footer__content__3'>
                 <p> GlomCode</p>
               </div>
-              <div className='footer__content__2'>
-                <div className='footer__content__4'>
-                  <p> Privacy Policy</p>
-                  <p> Terms of service</p>
-                  <p> About</p>
-                </div>
+              <div className='footer__content__4'>
+                <p> Privacy Policy</p>
+                <p> Terms of service</p>
+                <p> About</p>
               </div>
             </div>
           </div>
