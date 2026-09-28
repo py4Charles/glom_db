@@ -14,18 +14,6 @@ export default function AppShell() {
             </span>
             <span className="shell__wordmark">Glom Data-house</span>
           </NavLink>
-          {/* <nav className="shell__nav" aria-label="Main">
-            {NAV_ITEMS.map(item => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className="shell__link"
-                end={item.to === '/members'}
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </nav> */}
         </div>
       </header>
       <main className="shell__main">

@@ -101,14 +101,16 @@
 .footer__content__1 {
   display: flex;
   align-items: center;
-  max-width: var(--content-max);
+  max-width: var(--content-max-lg);
   margin: 0 auto;
-  background: red;
+  /* background: red; */
 }
 
 .footer__content__4 {
   display: inline-flex;
   padding: 8px 0px;
+  gap: 15px;
+  cursor: pointer;
   margin-left: auto;
   /* background: red; */
 }
@@ -116,7 +118,8 @@
 .footer__content__3 {
   display: flex;
   margin-right: auto;
-  background: yellow;
+  cursor: pointer;
+  /* background: yellow; */
 }
 
 .footer__content__3 p {
