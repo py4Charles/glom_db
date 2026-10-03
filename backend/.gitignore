@@ -5,3 +5,4 @@ dist/
 *.log
 .opencode
 schema.sql
+.vscode
